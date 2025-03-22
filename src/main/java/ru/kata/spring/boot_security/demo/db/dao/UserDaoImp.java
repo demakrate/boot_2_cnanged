@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.db.dao;
 
 
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -10,6 +9,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.db.models.User;
+import ru.kata.spring.boot_security.demo.service.RegistrationService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +19,12 @@ import java.util.List;
 public class UserDaoImp implements UserDao {
     @PersistenceContext
     private EntityManager manager;
+
+    private final RegistrationService registrationService;
+
+    public UserDaoImp(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
 
 
     @Override
@@ -47,7 +53,8 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public void addUser(User user) {
-        manager.persist(user);
+
+        registrationService.registerUser(user);
     }
 
     @Override

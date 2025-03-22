@@ -23,7 +23,8 @@ public class Role implements GrantedAuthority {
     @Column
     private String roleName;
 
-    public Role(){}
+    public Role() {
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -32,7 +33,8 @@ public class Role implements GrantedAuthority {
     public Long getId() {
         return id;
     }
-    public void setName(String roleName){
+
+    public void setName(String roleName) {
         this.roleName = roleName;
     }
 
@@ -42,7 +44,7 @@ public class Role implements GrantedAuthority {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return (this.roleName);
     }
 }

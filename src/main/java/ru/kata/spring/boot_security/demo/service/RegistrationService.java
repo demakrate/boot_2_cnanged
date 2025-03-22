@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.db.models.Role;
@@ -24,7 +25,7 @@ public class RegistrationService {
 
     public void registerUser(User user) {
         if (repository.findByMail(user.getMail()).isPresent()) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new DataIntegrityViolationException("Пользователь с таким email уже существует");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = rolesRepository.findByRoleName("USER").orElseThrow(()

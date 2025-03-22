@@ -6,6 +6,13 @@
     <meta charset="UTF-8">
     <title></title>
     <script>
+        function getCsrfToken() {
+            return document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                .split('=')[1];
+        }
+
         function getAllUsers() {
             const content = document.getElementById("content");
             fetch("/getAllUsers").then(response => {
@@ -45,14 +52,15 @@
         window.addEventListener("load", function () {
             document.getElementById("delete").addEventListener("submit", function (event) {
                 event.preventDefault();
-                let id = document.getElementById("deleteID").value;
-                const url = `/deleteUser`;
-                fetch(url, {
+                const params = new URLSearchParams();
+                params.append('id', document.getElementById("deleteID").value);
+                params.append('_csrf', document.getElementById("cookie").getAttribute("value"));
+                fetch(`/deleteUser`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `id=${encodeURIComponent(id)}`
+                    body: params
                 }).then(response => {
                     return response.text()
                 }).then(html => {
@@ -64,17 +72,19 @@
         window.addEventListener("load", function () {
             document.getElementById("add").addEventListener("submit", function (event) {
                 event.preventDefault();
-                const name = document.getElementById("name").value;
-                const age = document.getElementById("age").value;
-                const mail = document.getElementById("mail").value;
-                console.log(name);
+                const params = new URLSearchParams();
+                params.append('name', document.getElementById("name").value);
+                params.append('age', document.getElementById("age").value);
+                params.append('mail', document.getElementById("mail").value);
+                params.append('password', document.getElementById("password").value);
+                params.append('_csrf', document.getElementById("cookie").getAttribute("value"));
+                console.log(document.getElementById("cookie").getAttribute("value"));
                 fetch("/addUser", {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}
-                    &mail=${encodeURIComponent(mail)}`
+                    body: params
                 }).then(response => {
                     return response.text()
                 }).then(html => {
@@ -86,17 +96,20 @@
         window.addEventListener("load", function () {
             document.getElementById("change").addEventListener("submit", function (event) {
                 event.preventDefault();
-                const id = document.getElementById("changeID").value;
-                const name = document.getElementById("changeName").value;
-                const age = document.getElementById("changeAge").value;
-                const mail = document.getElementById("changeMail").value;
+                const params = new URLSearchParams();
+                params.append('id', document.getElementById("changeID").value)
+                params.append('name', document.getElementById("changeName").value);
+                params.append('age', document.getElementById("changeAge").value);
+                params.append('mail', document.getElementById("changeMail").value);
+                params.append('password', document.getElementById("password").value);
+                params.append('_csrf', document.getElementById("cookie").getAttribute("value"));
+
                 fetch("/changeUser", {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}
-                        &age=${encodeURIComponent(age)}&mail=${encodeURIComponent(mail)}`
+                    body: params
                 }).then(response => {
                     return response.text()
                 }).then(html => {
@@ -136,6 +149,8 @@
         <input type="number" id="age" name="age" required>
         <label for="mail">@mail:</label>
         <input type="text" id="mail" name="mail" required>
+        <label for="password">password:</label>
+        <input type="text" id="password" name="password" required>
         <button type="submit">Добавить</button>
     </form>
 </div>
@@ -158,12 +173,17 @@
         <input type="number" id="changeAge" name="age" required>
         <label for="changeMail">@mail:</label>
         <input type="text" id="changeMail" name="mail" required>
+        <label for="changePassword">@mail:</label>
+        <input type="text" id="changePassword" name="password" required>
         <button type="submit">Заменить</button>
     </form>
 </div>
 
 <div id="content"></div>
 <form th:action="@{/logout}" method="post">
+
+
+    <input type="hidden" id="cookie" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <button type="submit">Выход</button>
 </form>
 <div sec:authorize="hasAuthority('USER')">

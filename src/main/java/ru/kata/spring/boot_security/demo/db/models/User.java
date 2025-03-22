@@ -18,6 +18,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -157,6 +158,6 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return (this.name + ", возраст: " + this.age + ", @mail: " + this.mail + " роли: "
-                + this.roles.stream().findFirst().get().getRoleName());
+                + Arrays.toString(this.roles.toArray()));
     }
 }
