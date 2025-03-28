@@ -20,9 +20,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userDao.findByEmail(email)
+        return userDao.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return user;
     }
 }

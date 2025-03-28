@@ -9,7 +9,6 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.db.models.User;
 
@@ -39,8 +38,7 @@ public class UserDaoImp implements UserDao {
         Query query = manager.createQuery("SELECT user FROM User user WHERE user.id = :id");
         query.setParameter("id", id);
         try {
-            User user = (User) query.getSingleResult();
-            return user;
+            return (User) query.getSingleResult();
         } catch (NoResultException e) {
             throw new EntityNotFoundException("Пользователь с id: " + id + " не найден.");
         }
@@ -52,7 +50,6 @@ public class UserDaoImp implements UserDao {
         if (!findByEmail(user.getMail()).isEmpty()) {
             throw new DataIntegrityViolationException("Пользователь с таким email уже существует");
         }
-
         manager.persist(user);
     }
 

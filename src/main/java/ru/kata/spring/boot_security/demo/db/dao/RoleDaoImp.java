@@ -22,7 +22,7 @@ public class RoleDaoImp implements RoleDao {
         Query query = manager.createQuery("SELECT role FROM Role role WHERE role.roleName = :roleName");
         query.setParameter("roleName", role);
         return (Role) query.getSingleResult();
-    };
+    }
 
 
     @Override

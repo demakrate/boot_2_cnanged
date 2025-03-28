@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.db.models.Role;
 import ru.kata.spring.boot_security.demo.db.models.User;
@@ -12,7 +13,7 @@ import ru.kata.spring.boot_security.demo.db.services.UserService;
 
 import java.util.Set;
 
-//@Component
+@Component
 public class DataInitializer implements CommandLineRunner {
 
 
