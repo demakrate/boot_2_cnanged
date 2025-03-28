@@ -23,12 +23,9 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleService roleService;
 
 
-    private final PasswordEncoder passwordEncoder;
-
     public DataInitializer(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
