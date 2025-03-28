@@ -15,8 +15,9 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", e.getMessage());
         return "message";
     }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public String handleDataIntegrityViolationException(DataIntegrityViolationException e, Model model){
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e, Model model) {
         model.addAttribute("message", "Почта уже принадлежит другому пользователю");
         return "message";
     }

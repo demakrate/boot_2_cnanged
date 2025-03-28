@@ -3,29 +3,25 @@ package ru.kata.spring.boot_security.demo.db.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.db.models.User;
-import ru.kata.spring.boot_security.demo.service.RegistrationService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserDaoImp implements UserDao {
     @PersistenceContext
     private EntityManager manager;
-
-    private final RegistrationService registrationService;
-
-    public UserDaoImp(RegistrationService registrationService) {
-        this.registrationService = registrationService;
-    }
-
 
     @Override
     public List<User> getAllUsers() {
@@ -42,19 +38,22 @@ public class UserDaoImp implements UserDao {
     public User getUserByID(long id) throws EntityNotFoundException {
         Query query = manager.createQuery("SELECT user FROM User user WHERE user.id = :id");
         query.setParameter("id", id);
-        List users = query.getResultList();
-        if (!users.isEmpty()) {
-            return ((User) users.get(0));
-        } else {
-
+        try {
+            User user = (User) query.getSingleResult();
+            return user;
+        } catch (NoResultException e) {
             throw new EntityNotFoundException("Пользователь с id: " + id + " не найден.");
         }
+
     }
 
     @Override
     public void addUser(User user) {
+        if (!findByEmail(user.getMail()).isEmpty()) {
+            throw new DataIntegrityViolationException("Пользователь с таким email уже существует");
+        }
 
-        registrationService.registerUser(user);
+        manager.persist(user);
     }
 
     @Override
@@ -69,5 +68,30 @@ public class UserDaoImp implements UserDao {
     public void changeUser(User user) {
         getUserByID(user.getId());
         manager.merge(user);
+    }
+
+    @Override
+    public User findByUsernameWithRoles(String mail) {
+        try {
+            return manager.createQuery(
+                            "SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.mail = :mail", User.class)
+                    .setParameter("mail", mail)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Optional<User> findByEmail(String mail) {
+        try {
+            User user = manager.createQuery(
+                            "SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.mail = :mail", User.class)
+                    .setParameter("mail", mail)
+                    .getSingleResult();
+            return Optional.of(user);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

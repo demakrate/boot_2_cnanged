@@ -17,6 +17,7 @@ import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 public class SecurityConfig {
     private final SuccessUserHandler handler;
 
+
     public SecurityConfig(SuccessUserHandler handler) {
         this.handler = handler;
     }
@@ -51,6 +52,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(authenticationEntryPoint()));
+        //.userDetailsService(userDetailsService);
         return http.build();
     }
 
